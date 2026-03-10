@@ -13,6 +13,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  testMatch: '**/*.spec.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -74,16 +75,19 @@ export default defineConfig({
     webServer: [
         // Start backend
         {
-            command: 'npm run dev',
-            url: 'http://localhost:5000',
-            reuseExistingServer: !process.env.CI
+            // Change to port 5001
+            command: 'set PORT=5001&& npm run dev',
+            url: 'http://localhost:5001/api/dogs/random',
+            reuseExistingServer: true,
+            timeout: 15000
         },
         // Start frontend after backend
         {
             cwd: "../",
-            command: "npm run dev",
+            command: "set VITE_BACKEND_URL=http://localhost:5001&& npm run dev",
             url: "http://localhost:5173",
-            reuseExistingServer: !process.env.CI
+            reuseExistingServer: true,
+            timeout: 15000
         }
     ]
 });
